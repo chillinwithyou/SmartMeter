@@ -226,6 +226,67 @@ class MeterAPI extends Controller
         }
     }
 
+    public function deletePrices(String $username, array $price_ids, String $apiKey)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=deletePrice&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "id" => $price_ids,
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+
+    }
+
+    public function addMeter(String $username, array $meterObjects, $apiKey)
+    {
+
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=addMeter&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "mts" => $meterObjects,
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+
+    }
+
     public function controlRelay(String $username, String $value, String $metId, String $isWifi="1", String $apiKey)
     {
         $url = env("METER_URL");
