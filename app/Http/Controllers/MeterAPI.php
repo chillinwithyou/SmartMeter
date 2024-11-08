@@ -75,6 +75,35 @@ class MeterAPI extends Controller
         }
     }
 
+    public function getDeviceDetails(String $username, String $meter_id, String $apiKey)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=getMetStatusByMetId&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "metid" => $meter_id
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
     public function getDevices(String $username, $apiKey)
     {
         $url = env("METER_URL");
@@ -123,8 +152,6 @@ class MeterAPI extends Controller
 
             $json_decoded = json_decode($response->body(), true);
 
-            dd($json_decoded);
-
             if ($json_decoded["result"] === 200) {
 
                 return $json_decoded;
@@ -137,7 +164,7 @@ class MeterAPI extends Controller
         }
     }
 
-    public function getUsers($username, $apiKey)
+    public function getUsers($username, $apiKey, $ckv="")
     {
         $url = env("METER_URL");
         $endpoint = env("METER_ENDPOINT");
@@ -149,6 +176,7 @@ class MeterAPI extends Controller
 
             $response = Http::post($constructed_url, [
                 "loginid" => $username,
+                "ckv" => $ckv
             ]);
 
             $json_decoded = json_decode($response->body(), true);
@@ -194,7 +222,7 @@ class MeterAPI extends Controller
         }
     }
 
-    public function addPrice(String $username, String $priceName, String $price, String $priceNote, int $priceType=0, $apiKey)
+    public function addPrice(String $username, String $priceName, String $price, String $priceNote, int $priceType=1, $apiKey)
     {
         $url = env("METER_URL");
         $endpoint = env("METER_ENDPOINT");
@@ -210,6 +238,100 @@ class MeterAPI extends Controller
                 "Price" => $price,
                 "Pnote" => $priceNote,
                 "priceType" => $priceType
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
+    public function landlordRecharge(String $username, String $meter_id, String $simple, String $apiKey, String $sellKwh="0", String $sellMoney="0", String $isWifi="1")
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=sellKwh&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "sellKwh" => $sellKwh,
+                "sellMoney" => $sellMoney,
+                "metid" => $meter_id,
+                "simple" => $simple,
+                "iswifi" => $isWifi
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+            return null;
+            
+        } catch (Exception $e) {
+            return $e;
+        }
+    }
+
+    public function sellByApi(String $username, String $meter_id, String $simple, String $apiKey, String $sellKwh="0", String $sellMoney="0")
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=sellByApi&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "sellKwh" => $sellKwh,
+                "sellMoney" => $sellMoney,
+                "metid" => $meter_id,
+                "simple" => $simple
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
+    public function sellByApiOk(String $username, String $payment_id, String $meter_id, String $apiKey)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=sellByApiOk&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "idx" => $payment_id,
+                "metid" => $meter_id,
             ]);
 
             $json_decoded = json_decode($response->body(), true);
@@ -287,6 +409,158 @@ class MeterAPI extends Controller
 
     }
 
+    public function getMonthBill(String $username, String $start, String $end, String $meter_id, String $apiKey, int $time_query=1)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=getMonthBill&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "st" => $start,
+                "et" => $end,
+                "metID" => $meter_id,
+                "mYMD" => $time_query
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
+    public function getPublicHisList(String $username, String $meter_id, String $start, String $end, String $apiKey)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=getPublicHisList&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "stime" => $start,
+                "etime" => $end,
+                "meterID" => $meter_id,
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
+    public function getUsageSummary(String $username, String $meter_id, String $apiKey)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=getSumm&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "meterID" => $meter_id,
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
+    public function getUserMeter(String $username, String $user_id, String $apiKey)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=link2MetersList&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "userid" => $user_id
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
+    public function linkUserMeter(String $username, String $user_id, String $meter_id, String $apiKey)
+    {
+        $url = env("METER_URL");
+        $endpoint = env("METER_ENDPOINT");
+        $apiKey = urlencode($this->encryptAndEncodeApikey($apiKey));
+
+        $constructed_url = "{$url}?Method=link2User&api={$endpoint}&apiKey={$apiKey}";
+
+        try {
+
+            $response = Http::post($constructed_url, [
+                "loginid" => $username,
+                "MeterID" => $meter_id,
+                "UserID" => $user_id
+            ]);
+
+            $json_decoded = json_decode($response->body(), true);
+
+            if ($json_decoded["result"] === 200) {
+
+                return $json_decoded;
+            }
+
+            return null;
+        } catch (Exception $e) {
+
+            return $e;
+        }
+    }
+
+
     public function controlRelay(String $username, String $value, String $metId, String $isWifi="1", String $apiKey)
     {
         $url = env("METER_URL");
@@ -316,6 +590,26 @@ class MeterAPI extends Controller
 
             return $e;
         }
+    }
+
+    public function MeterObject(String $meter_id, String $meter_name, String $price_id, String $user_id, String $meter_note="", String $meter_phone="", String $index="", String $warmKwh="2", String $sell_min="2", String $isAdd="1")
+    {
+
+        $meterObject = [
+
+            "MeterID" => $meter_id,
+            "Name" => $meter_name,
+            "PriceID" => $price_id,
+            "Tel" => $meter_phone,
+            "Note" => $meter_note,
+            "UserID" => $user_id,
+            "index" => $index,
+            "warmkwh" => $warmKwh,
+            "sellmin" => $sell_min,
+            "isAdd" => $isAdd
+        ];
+
+        return $meterObject;
     }
 
     function encryptAndEncodeApikey($apikey) {
