@@ -43,4 +43,15 @@
 
     </table>
 
+    <div class="d-flex flex-row justify-content-between">
+        <a href="{{ route('userUsage', $userId) }}?start={{ Carbon\Carbon::parse($start)->subMonth()->firstOfMonth()->format("Y-m-d") }}&end={{ Carbon\Carbon::parse($start)->subMonth()->endOfMonth()->format("Y-m-d") }}" class="btn btn-primary">
+            Previous
+        </a>
+
+        <a href="{{ route('userUsage', $userId) }}?start={{ Carbon\Carbon::parse($start)->addMonth()->firstOfMonth()->format("Y-m-d") }}&end={{ Carbon\Carbon::parse($start)->addMonth()->endOfMonth()->format("Y-m-d") }}" class="btn btn-primary">
+            Next
+        </a>
+
+    </div>
+
 </x-layout>

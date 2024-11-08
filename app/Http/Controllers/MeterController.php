@@ -217,7 +217,7 @@ class MeterController extends Controller
 
         $end = $request->get("end");
         if(!$end){
-            $end = Carbon::now()->format("Y-m-d");
+            $end = Carbon::now()->endOfMonth()->format("Y-m-d");
         }
 
 
@@ -236,7 +236,10 @@ class MeterController extends Controller
                 return view("meters.usage", [
                     "usages" => $userBill["value"],
                     "username" => $user["Name"],
-                    "summary" => $summary["value"]
+                    "summary" => $summary["value"],
+                    "userId" => $user["adminID"],
+                    "start" => $start,
+                    "end" => $end
                 ]);
             }
 
