@@ -77,7 +77,7 @@ Route::prefix("/smartmeter")->group(function (){
         Route::post("/meters/{meterId}/{value}", [MeterController::class, "switch_meter"])->name("switch_meter");
     });
 
-    Route::get("/ei/bet", function() {
+    Route::get("/ei/hello", function() {
         dd("Hello");
     });
 
