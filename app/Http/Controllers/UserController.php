@@ -36,7 +36,7 @@ class UserController extends Controller
             if($apiKey){
                 Cache::put("username", $user->name, now()->addHours(23));
                 Cache::put("apiKey", $apiKey, now()->addHours(23));
-                return redirect("/");
+                return redirect(route("dashboard"));
             }
         }
 
